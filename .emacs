@@ -23,36 +23,52 @@
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
 
-;theme
+;; theme
 (load-theme 'zenburn t)
 
-;which key
+;; which key
 (which-key-mode)
 
-;guru mode
+;; guru mode
 (add-hook 'prog-mode-hook 'guru-mode)
 
-;ivy
+;; ivy
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
 
-;projectile
+;; projectile
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (projectile-mode +1)
 (setq projectile-project-search-path '(("~/dev/" . 1)))
 
-;undo tree
+;; undo tree
 (global-undo-tree-mode)
 
-;pinentry/gpg
+;; pinentry/gpg
 (require 'epg)
 (setq epg-pinentry-mode 'loopback)
-;https://gist.github.com/bmhatfield/cc21ec0a3a2df963bffa3c1f884b676b
+;; https://gist.github.com/bmhatfield/cc21ec0a3a2df963bffa3c1f884b676b
 
- ;git
-;https://simpleit.rocks/git/make-git-ignore-temporary-files-produced-by-emacs-and-vim-in-all-directories-globally/
-;zshrc
-;export GPG_TTY=$(tty)
-;export TERM=xterm-256color
+;; git
+;; https://simpleit.rocks/git/make-git-ignore-temporary-files-produced-by-emacs-and-vim-in-all-directories-globally/
+
+;; shell
+;; iterm2 disable command w, enable alt/option
+
+;; zsh
+;; export GPG_TTY=$(tty)
+;; export TERM=xterm-256color
+
+;; get the relative path of the current buffer
+(defun copy-relative-path ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (shell-command (concat "echo -n " filename " | pbcopy"))
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the clipboard." filename))))
