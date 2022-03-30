@@ -10,7 +10,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(undo-tree ivy projectile magit guru-mode which-key zenburn-theme)))
+   '(xterm-color undo-tree ivy projectile magit guru-mode which-key zenburn-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -40,10 +40,12 @@
 ;; projectile
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(projectile-mode +1)
 (setq projectile-project-search-path '(("~/dev/" . 1)))
+(setq projectile-ignored-projects '("~/"))
+(projectile-mode +1)
 
 ;; undo tree
+(setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
 (global-undo-tree-mode)
 
 ;; pinentry/gpg
@@ -56,10 +58,28 @@
 
 ;; shell
 ;; iterm2 disable command w, enable alt/option
+(require 'xterm-color)
+(setq compilation-environment '("TERM=xterm-256color"))
+
+(defun my/advice-compilation-filter (f proc string)
+  (funcall f proc (xterm-color-filter string)))
+
+(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
 
 ;; zsh
 ;; export GPG_TTY=$(tty)
 ;; export TERM=xterm-256color
+
+;; cleanup backup files
+;; find . -name '*~' -delete
+;; find . -name '*#' -delete
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
 
 ;; get the relative path of the current buffer
 (defun copy-relative-path ()
