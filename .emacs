@@ -1,8 +1,5 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -10,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(xterm-color undo-tree ivy projectile magit guru-mode which-key zenburn-theme)))
+   '(xterm-color counsel projectile magit guru-mode which-key zenburn-theme)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -23,6 +20,11 @@
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
 
+;; install if missing
+(unless package-archive-contents
+  (package-refresh-contents))
+(package-install-selected-packages)
+
 ;; theme
 (load-theme 'zenburn t)
 
@@ -32,7 +34,8 @@
 ;; guru mode
 (add-hook 'prog-mode-hook 'guru-mode)
 
-;; ivy
+;; ivy/counsel
+(counsel-mode 1)
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
@@ -42,11 +45,8 @@
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (setq projectile-project-search-path '(("~/dev/" . 1)))
 (setq projectile-ignored-projects '("~/"))
+(setq projectile-completion-system 'ivy)
 (projectile-mode +1)
-
-;; undo tree
-(setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
-(global-undo-tree-mode)
 
 ;; pinentry/gpg
 (require 'epg)
@@ -55,6 +55,7 @@
 
 ;; git
 ;; https://simpleit.rocks/git/make-git-ignore-temporary-files-produced-by-emacs-and-vim-in-all-directories-globally/
+;; install ag/rg
 
 ;; shell
 ;; iterm2 disable command w, enable alt/option
