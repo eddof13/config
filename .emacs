@@ -34,6 +34,9 @@
 ;; guru mode
 (add-hook 'prog-mode-hook 'guru-mode)
 
+;; line numbers
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
 ;; ivy/counsel
 (counsel-mode 1)
 (ivy-mode 1)
