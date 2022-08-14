@@ -16,7 +16,9 @@
  )
 
 ;; initialization
+(tool-bar-mode -1)
 (menu-bar-mode -1)
+(toggle-frame-maximized)
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
 
@@ -46,7 +48,7 @@
 ;; projectile
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(setq projectile-project-search-path '(("~/dev/" . 1)))
+(setq projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
 (setq projectile-ignored-projects '("~/"))
 (setq projectile-completion-system 'ivy)
 (projectile-mode +1)
