@@ -36,8 +36,10 @@
 ;; guru mode
 (add-hook 'prog-mode-hook 'guru-mode)
 
-;; line numbers
+;; line numbers etc
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(setq-default fill-column 150)
+(add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 ;; ivy/counsel
 (counsel-mode 1)
@@ -52,6 +54,7 @@
 (setq projectile-ignored-projects '("~/"))
 (setq projectile-completion-system 'ivy)
 (projectile-mode +1)
+(global-set-key "\347f" 'counsel-ag)
 
 ;; pinentry/gpg
 (require 'epg)
