@@ -7,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(xterm-color counsel projectile magit guru-mode which-key zenburn-theme)))
+   '(xterm-color counsel projectile magit guru-mode which-key zenburn-theme treemacs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -55,6 +55,12 @@
 (setq projectile-completion-system 'ivy)
 (projectile-mode +1)
 (global-set-key "\347f" 'counsel-ag)
+
+;; treemacs
+(setq treemacs-display-current-project-exclusively t)
+(treemacs-project-follow-mode t)
+(treemacs-follow-mode t)
+(treemacs-fringe-indicator-mode 'always)
 
 ;; pinentry/gpg
 (require 'epg)
