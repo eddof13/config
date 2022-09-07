@@ -7,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(xterm-color counsel projectile magit guru-mode which-key zenburn-theme treemacs)))
+   '(xterm-color counsel projectile magit guru-mode which-key treemacs)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -28,7 +28,7 @@
 (package-install-selected-packages)
 
 ;; theme
-(load-theme 'zenburn t)
+(load-theme 'modus-operandi t)
 
 ;; which key
 (which-key-mode)
