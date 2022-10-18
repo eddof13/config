@@ -50,6 +50,9 @@
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
 (setq ivy-count-format "(%d/%d) ")
+(global-set-key "\347f" 'counsel-ag)
+(define-key ivy-minibuffer-map (kbd "M-n") 'ivy-next-history-element)
+(define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-history-element)
 
 ;; projectile
 (require 'projectile)
@@ -58,7 +61,6 @@
 (setq projectile-ignored-projects '("~/"))
 (setq projectile-completion-system 'ivy)
 (projectile-mode +1)
-(global-set-key "\347f" 'counsel-ag)
 
 ;; treemacs
 (setq treemacs-display-current-project-exclusively t)
