@@ -43,6 +43,7 @@
 ;; line numbers etc
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq-default fill-column 150)
+(setq js-indent-level 2)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 ;; ivy/counsel
