@@ -7,13 +7,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(xterm-color counsel projectile magit guru-mode which-key treemacs exec-path-from-shell)))
+   '(use-package xterm-color projectile magit which-key exec-path-from-shell vertico consult marginalia orderless flycheck treesit-auto)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; TODO: revisit corfu, lsp-mode when frames are in terminal emacs (31+)
 
 ;; initialization
 (tool-bar-mode -1)
@@ -27,12 +29,30 @@
   (package-refresh-contents))
 (package-install-selected-packages)
 
+(eval-when-compile
+  (require 'use-package))
+
 ;; theme
 (load-theme 'modus-operandi t)
 
 ;; shell
 (when (memq window-system '(mac ns x))
+  (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
+
+;; treesit
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+;; flycheck
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;; which key
 (which-key-mode)
@@ -40,37 +60,47 @@
 ;; pixel scroll
 (pixel-scroll-precision-mode)
 
-;; guru mode
-(add-hook 'prog-mode-hook 'guru-mode)
-
 ;; line numbers etc
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq js-indent-level 2)
 (setq-default fill-column 150)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
-;; ivy/counsel
-(counsel-mode 1)
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-count-format "(%d/%d) ")
+;; vertico
+(use-package vertico
+  :init
+  (vertico-mode))
+
+;; orderless
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless partial-completion basic)
+        completion-category-defaults nil
+        completion-category-overrides nil))
+
+;; marginalia
+(use-package marginalia
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode))
+
+;; consult
+(use-package consult
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :init
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 
 ;; projectile
 (require 'projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (setq projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
 (setq projectile-ignored-projects '("~/"))
-(setq projectile-completion-system 'ivy)
 (projectile-mode +1)
-(global-set-key "\347f" 'counsel-rg)
-(define-key ivy-minibuffer-map (kbd "M-n") 'ivy-next-history-element)
-(define-key ivy-minibuffer-map (kbd "M-p") 'ivy-previous-history-element)
-
-;; treemacs
-(setq treemacs-display-current-project-exclusively t)
-(treemacs-project-follow-mode t)
-(treemacs-follow-mode t)
-(treemacs-fringe-indicator-mode 'always)
+(global-set-key "\347f" 'consult-ripgrep)
 
 ;; pinentry/gpg
 (require 'epg)
