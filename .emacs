@@ -7,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(use-package xterm-color projectile magit which-key exec-path-from-shell vertico consult marginalia orderless flycheck treesit-auto)))
+   '(consult exec-path-from-shell flycheck use-package xterm-color projectile)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -42,6 +42,7 @@
 
 ;; treesit
 (use-package treesit-auto
+  :ensure t
   :custom
   (treesit-auto-install 'prompt)
   :config
@@ -68,11 +69,13 @@
 
 ;; vertico
 (use-package vertico
+  :ensure t
   :init
   (vertico-mode))
 
 ;; orderless
 (use-package orderless
+  :ensure t
   :init
   (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
@@ -80,6 +83,7 @@
 
 ;; marginalia
 (use-package marginalia
+  :ensure t
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
   :init
@@ -87,6 +91,7 @@
 
 ;; consult
 (use-package consult
+  :ensure t
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
   (advice-add #'register-preview :override #'consult-register-window)
