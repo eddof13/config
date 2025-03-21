@@ -214,3 +214,31 @@
       (shell-command (concat "echo -n " filename " | pbcopy"))
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+;; rspec current buffer path
+(defun copy-relative-path-rspec ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name)))
+	(prefix "bundle exec rspec "))
+    (when filename
+      (let ((fullname (concat prefix filename)))
+	(shell-command (concat "echo -n " fullname " | pbcopy"))
+	(kill-new fullname)
+	(message "Copied buffer file name '%s' to the clipboard." fullname)))))
+
+;; ruby current buffer path
+(defun copy-relative-path-ruby ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name)))
+	(prefix "bundle exec ruby "))
+    (when filename
+      (let ((fullname (concat prefix filename)))
+	(shell-command (concat "echo -n " fullname " | pbcopy"))
+	(kill-new fullname)
+	(message "Copied buffer file name '%s' to the clipboard." fullname)))))
