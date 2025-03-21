@@ -6,6 +6,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-checker-error-threshold 600)
  '(package-selected-packages
    '(consult exec-path-from-shell flycheck use-package xterm-color projectile magit)))
 (custom-set-faces
@@ -48,12 +49,6 @@
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
-
-;; flycheck
-(use-package flycheck
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;; which key
 (which-key-mode)
