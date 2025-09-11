@@ -6,8 +6,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(consult exec-path-from-shell magit projectile use-package xterm-color)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -15,7 +14,7 @@
  ;; If there is more than one, they won't work right.
  )
 
-;; TODO: revisit corfu, lsp-mode when frames are in terminal emacs (31+)
+;; TODO: revisit corfu, embark, flycheck, lsp-mode when frames are in terminal emacs (31+)
 
 ;; initialization
 (tool-bar-mode -1)
@@ -36,9 +35,16 @@
 (load-theme 'modus-operandi t)
 
 ;; shell
-(when (memq window-system '(mac ns x))
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :config
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
+
+;; magit
+(use-package magit
+  :ensure t)
 
 ;; treesit
 (use-package treesit-auto
@@ -50,7 +56,10 @@
   (global-treesit-auto-mode))
 
 ;; which key
-(which-key-mode)
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode))
 
 ;; pixel scroll
 (pixel-scroll-precision-mode)
@@ -162,11 +171,15 @@
         xref-show-definitions-function #'consult-xref))
 
 ;; projectile
-(require 'projectile)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(setq projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
-(setq projectile-ignored-projects '("~/"))
-(projectile-mode +1)
+(use-package projectile
+  :ensure t
+  :bind (("C-c p" . projectile-command-map))
+  :custom
+  (projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
+  (projectile-ignored-projects '("~/"))
+  :config
+  (projectile-mode +1))
+
 (global-set-key "\347f" 'consult-ripgrep)
 
 ;; pinentry/gpg
@@ -182,6 +195,15 @@
 ;; iterm2 disable command w, enable alt/option
 (require 'xterm-color)
 (setq compilation-environment '("TERM=xterm-256color"))
+
+(use-package aider
+  :ensure t
+  :config
+  (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
+  (global-set-key (kbd "C-c a") 'aider-transient-menu) ;; for wider screen
+  ;; or use aider-transient-menu-2cols / aider-transient-menu-1col, for narrow screen
+  (aider-magit-setup-transients)
+  (global-auto-revert-mode 1))
 
 (defun my/advice-compilation-filter (f proc string)
   (funcall f proc (xterm-color-filter string)))
