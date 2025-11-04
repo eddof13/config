@@ -6,7 +6,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages
+   '(consult exec-path-from-shell marginalia orderless projectile treesit-auto vertico xterm-color)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -195,15 +196,6 @@
 ;; iterm2 disable command w, enable alt/option
 (require 'xterm-color)
 (setq compilation-environment '("TERM=xterm-256color"))
-
-(use-package aider
-  :ensure t
-  :config
-  (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
-  (global-set-key (kbd "C-c a") 'aider-transient-menu) ;; for wider screen
-  ;; or use aider-transient-menu-2cols / aider-transient-menu-1col, for narrow screen
-  (aider-magit-setup-transients)
-  (global-auto-revert-mode 1))
 
 (defun my/advice-compilation-filter (f proc string)
   (funcall f proc (xterm-color-filter string)))
