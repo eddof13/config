@@ -70,6 +70,7 @@
 (setq js-indent-level 2)
 (setq-default fill-column 150)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
+(global-auto-revert-mode 1)
 
 ;; vertico
 (use-package vertico
