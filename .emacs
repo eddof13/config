@@ -81,6 +81,10 @@
 (setq tab-always-indent 'complete)
 (setq completion-cycle-threshold 3)
 
+;; clipboard integration
+(setq select-enable-clipboard t)
+(setq select-enable-primary t)  ; Also sync with X primary selection (useful on Linux)
+
 ;; vertico
 (use-package vertico
   :ensure t
@@ -231,38 +235,28 @@
 (setq kept-old-versions 5)           ; How many of the old versions to keep
 
 ;; get the relative path of the current buffer
-(defun copy-relative-path ()
-  "Copy the current buffer file name to the clipboard."
-  (interactive)
+(defun copy-relative-path-with-prefix (&optional prefix)
+  "Copy the current buffer file name to the clipboard with optional PREFIX."
   (let ((filename (if (equal major-mode 'dired-mode)
                       default-directory
                     (buffer-file-name))))
     (when filename
-      (kill-new filename)
-      (message "Copied: %s" filename))))
+      (let ((fullname (if prefix (concat prefix filename) filename)))
+        (kill-new fullname)
+        (shell-command (concat "echo -n " (shell-quote-argument fullname) " | pbcopy"))
+        (message "Copied: %s" fullname)))))
 
-;; rspec current buffer path
+(defun copy-relative-path ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (copy-relative-path-with-prefix))
+
 (defun copy-relative-path-rspec ()
   "Copy the current buffer file name with rspec prefix to the clipboard."
   (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
-                      default-directory
-                    (buffer-file-name)))
-        (prefix "bundle exec rspec "))
-    (when filename
-      (let ((fullname (concat prefix filename)))
-        (kill-new fullname)
-        (message "Copied: %s" fullname)))))
+  (copy-relative-path-with-prefix "bundle exec rspec "))
 
-;; ruby current buffer path
 (defun copy-relative-path-ruby ()
   "Copy the current buffer file name with ruby prefix to the clipboard."
   (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
-                      default-directory
-                    (buffer-file-name)))
-        (prefix "bundle exec ruby "))
-    (when filename
-      (let ((fullname (concat prefix filename)))
-        (kill-new fullname)
-        (message "Copied: %s" fullname)))))
+  (copy-relative-path-with-prefix "bundle exec ruby "))
