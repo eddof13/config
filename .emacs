@@ -7,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(consult exec-path-from-shell marginalia orderless projectile treesit-auto vertico xterm-color)))
+   '(consult magit exec-path-from-shell marginalia orderless projectile treesit-auto vertico xterm-color)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -65,12 +65,21 @@
 ;; pixel scroll
 (pixel-scroll-precision-mode)
 
-;; line numbers etc
+;; useful built-in modes
+(show-paren-mode 1)
+(electric-pair-mode 1)
+(delete-selection-mode 1)
+(global-auto-revert-mode 1)
+(winner-mode 1)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq js-indent-level 2)
+(setq ruby-indent-level 2)
 (setq-default fill-column 150)
 (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
-(global-auto-revert-mode 1)
+
+;; completion settings
+(setq tab-always-indent 'complete)
+(setq completion-cycle-threshold 3)
 
 ;; vertico
 (use-package vertico
@@ -182,12 +191,16 @@
   :config
   (projectile-mode +1))
 
-(global-set-key "\347f" 'consult-ripgrep)
+(global-set-key (kbd "C-c f") 'consult-ripgrep)
 
 ;; pinentry/gpg
 (require 'epg)
 (setq epg-pinentry-mode 'loopback)
 ;; https://gist.github.com/bmhatfield/cc21ec0a3a2df963bffa3c1f884b676b
+
+;; dired enhancements
+(setq dired-dwim-target t)              ; Guess target directory for copy/move
+(setq dired-listing-switches "-alh")    ; Human-readable file sizes
 
 ;; git
 ;; https://simpleit.rocks/git/make-git-ignore-temporary-files-produced-by-emacs-and-vim-in-all-directories-globally/
@@ -210,13 +223,12 @@
 ;; cleanup backup files
 ;; find . -name '*~' -delete
 ;; find . -name '*#' -delete
-(setq backup-directory-alist '(("." . "~/.emacs.d/backup"))
-  backup-by-copying t    ; Don't delink hardlinks
-  version-control t      ; Use version numbers on backups
-  delete-old-versions t  ; Automatically delete excess backups
-  kept-new-versions 20   ; how many of the newest versions to keep
-  kept-old-versions 5    ; and how many of the old
-  )
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
+(setq backup-by-copying t)           ; Don't delink hardlinks
+(setq version-control t)             ; Use version numbers on backups
+(setq delete-old-versions t)         ; Automatically delete excess backups
+(setq kept-new-versions 20)          ; How many of the newest versions to keep
+(setq kept-old-versions 5)           ; How many of the old versions to keep
 
 ;; get the relative path of the current buffer
 (defun copy-relative-path ()
@@ -226,34 +238,31 @@
                       default-directory
                     (buffer-file-name))))
     (when filename
-      (shell-command (concat "echo -n " filename " | pbcopy"))
       (kill-new filename)
-      (message "Copied buffer file name '%s' to the clipboard." filename))))
+      (message "Copied: %s" filename))))
 
 ;; rspec current buffer path
 (defun copy-relative-path-rspec ()
-  "Copy the current buffer file name to the clipboard."
+  "Copy the current buffer file name with rspec prefix to the clipboard."
   (interactive)
   (let ((filename (if (equal major-mode 'dired-mode)
                       default-directory
                     (buffer-file-name)))
-	(prefix "bundle exec rspec "))
+        (prefix "bundle exec rspec "))
     (when filename
       (let ((fullname (concat prefix filename)))
-	(shell-command (concat "echo -n " fullname " | pbcopy"))
-	(kill-new fullname)
-	(message "Copied buffer file name '%s' to the clipboard." fullname)))))
+        (kill-new fullname)
+        (message "Copied: %s" fullname)))))
 
 ;; ruby current buffer path
 (defun copy-relative-path-ruby ()
-  "Copy the current buffer file name to the clipboard."
+  "Copy the current buffer file name with ruby prefix to the clipboard."
   (interactive)
   (let ((filename (if (equal major-mode 'dired-mode)
                       default-directory
                     (buffer-file-name)))
-	(prefix "bundle exec ruby "))
+        (prefix "bundle exec ruby "))
     (when filename
       (let ((fullname (concat prefix filename)))
-	(shell-command (concat "echo -n " fullname " | pbcopy"))
-	(kill-new fullname)
-	(message "Copied buffer file name '%s' to the clipboard." fullname)))))
+        (kill-new fullname)
+        (message "Copied: %s" fullname)))))
