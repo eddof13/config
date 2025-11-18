@@ -195,8 +195,6 @@
   :config
   (projectile-mode +1))
 
-(global-set-key (kbd "C-c f") 'consult-ripgrep)
-
 ;; pinentry/gpg
 (require 'epg)
 (setq epg-pinentry-mode 'loopback)
