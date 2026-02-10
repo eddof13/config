@@ -52,6 +52,7 @@
 (setq agent-shell-anthropic-authentication
       (agent-shell-anthropic-make-authentication :login t))
 (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+(setq agent-shell-transcript-file-path-function nil)
 
 ;; magit
 (use-package magit
