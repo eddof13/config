@@ -7,7 +7,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(consult magit exec-path-from-shell marginalia orderless projectile treesit-auto vertico xterm-color)))
+   '(agent-shell consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s treesit-auto vertico xterm-color)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -15,7 +15,7 @@
  ;; If there is more than one, they won't work right.
  )
 
-;; TODO: revisit corfu, embark, flycheck, lsp-mode when frames are in terminal emacs (31+)
+;; TODO: revisit corfu, embark, flycheck, eglot when frames are in terminal emacs (31+)
 
 ;; initialization
 (tool-bar-mode -1)
@@ -42,6 +42,16 @@
   :config
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
+
+;; agent-shell
+(use-package agent-shell
+    :ensure t
+    :ensure-system-package
+    ((claude . "brew install claude-code")
+     (claude-code-acp . "npm install -g @zed-industries/claude-code-acp")))
+(setq agent-shell-anthropic-authentication
+      (agent-shell-anthropic-make-authentication :login t))
+(setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
 
 ;; magit
 (use-package magit
@@ -258,3 +268,25 @@
   "Copy the current buffer file name with ruby prefix to the clipboard."
   (interactive)
   (copy-relative-path-with-prefix "bundle exec ruby "))
+
+(defun run-test-file ()
+  "Run the test for the current buffer if it's a test file.
+For RSpec files (*_spec.rb), runs 'bundle exec rspec <file>'.
+For Minitest files (*_test.rb), runs 'bundle exec ruby <file>'.
+Command runs from the project root directory using Projectile."
+  (interactive)
+  (let ((filename (buffer-file-name))
+        (project-root (projectile-project-root)))
+    (if (not filename)
+        (message "Buffer is not visiting a file")
+      (if (not project-root)
+          (message "Not in a Projectile project")
+        (cond
+         ((string-match "_spec\\.rb$" filename)
+          (let ((default-directory project-root))
+            (compile (concat "bundle exec rspec " (shell-quote-argument filename)))))
+         ((string-match "_test\\.rb$" filename)
+          (let ((default-directory project-root))
+            (compile (concat "bundle exec ruby " (shell-quote-argument filename)))))
+         (t
+          (message "Not a test file (must end with _spec.rb or _test.rb)")))))))
