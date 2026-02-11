@@ -204,7 +204,9 @@
   (projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
   (projectile-ignored-projects '("~/"))
   :config
-  (projectile-mode +1))
+  (projectile-mode +1)
+  ;; Override the default projectile toggle keybinding
+  (define-key projectile-command-map (kbd "t") 'project-toggle-between-implementation-and-test))
 
 ;; pinentry/gpg
 (require 'epg)
@@ -291,3 +293,65 @@ Command runs from the project root directory using Projectile."
             (compile (concat "bundle exec ruby " (shell-quote-argument filename)))))
          (t
           (message "Not a test file (must end with _spec.rb or _test.rb)")))))))
+
+(defun copy-region-to-clipboard ()
+  "Copy the selected region to the system clipboard using pbcopy."
+  (interactive)
+  (if (use-region-p)
+      (let ((text (buffer-substring-no-properties (region-beginning) (region-end))))
+        (shell-command-on-region (region-beginning) (region-end) "pbcopy")
+        (message "Copied %d characters to clipboard" (length text)))
+    (message "No region selected")))
+
+(defun project-toggle-between-implementation-and-test ()
+  "Toggle between implementation and test files in a cycle.
+Cycles through: implementation → *_spec.rb → *_test.rb → implementation.
+Handles Rails conventions: app/ ↔ spec/ ↔ test/"
+  (interactive)
+  (let* ((filename (buffer-file-name))
+         (impl-file nil)
+         (spec-file nil)
+         (test-file nil))
+    (cond
+     ;; Currently in spec file (spec/...)
+     ((string-match "\\(.+\\)/spec/\\(.+\\)_spec\\.rb$" filename)
+      (let ((root (match-string 1 filename))
+            (relative-path (match-string 2 filename)))
+        (setq impl-file (concat root "/app/" relative-path ".rb"))
+        (setq test-file (concat root "/test/" relative-path "_test.rb"))
+        (cond
+         ;; If test file exists, go to it (continue cycle)
+         ((file-exists-p test-file)
+          (find-file test-file))
+         ;; Otherwise go back to implementation
+         ((file-exists-p impl-file)
+          (find-file impl-file))
+         (t (message "Implementation file not found: %s" impl-file)))))
+     
+     ;; Currently in test file (test/...)
+     ((string-match "\\(.+\\)/test/\\(.+\\)_test\\.rb$" filename)
+      (let ((root (match-string 1 filename))
+            (relative-path (match-string 2 filename)))
+        (setq impl-file (concat root "/app/" relative-path ".rb"))
+        (cond
+         ;; Always go back to implementation to complete the cycle
+         ((file-exists-p impl-file)
+          (find-file impl-file))
+         (t (message "Implementation file not found: %s" impl-file)))))
+     
+     ;; Currently in implementation file (app/...)
+     ((string-match "\\(.+\\)/app/\\(.+\\)\\.rb$" filename)
+      (let ((root (match-string 1 filename))
+            (relative-path (match-string 2 filename)))
+        (setq spec-file (concat root "/spec/" relative-path "_spec.rb"))
+        (setq test-file (concat root "/test/" relative-path "_test.rb"))
+        (cond
+         ;; Prefer spec file if it exists
+         ((file-exists-p spec-file)
+          (find-file spec-file))
+         ;; Fall back to test file
+         ((file-exists-p test-file)
+          (find-file test-file))
+         (t (message "No test file found (tried %s and %s)" spec-file test-file)))))
+     
+     (t (message "Not in app/, spec/, or test/ directory")))))
