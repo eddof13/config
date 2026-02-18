@@ -48,7 +48,7 @@
     :ensure t
     :ensure-system-package
     ((claude . "brew install claude-code")
-     (claude-code-acp . "npm install -g @zed-industries/claude-code-acp")))
+     (claude-agent-acp . "npm install -g @zed-industries/claude-agent-acp")))
 (setq agent-shell-anthropic-authentication
       (agent-shell-anthropic-make-authentication :login t))
 (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
