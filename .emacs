@@ -7,7 +7,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(agent-shell consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s treesit-auto vertico xterm-color)))
+   '(agent-shell consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s shell-maker transient treesit-auto vertico
+		 xterm-color)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -48,7 +49,7 @@
     :ensure t
     :ensure-system-package
     ((claude . "brew install claude-code")
-     (claude-agent-acp . "npm install -g @zed-industries/claude-agent-acp")))
+     (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")))
 (setq agent-shell-anthropic-authentication
       (agent-shell-anthropic-make-authentication :login t))
 (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
