@@ -21,7 +21,7 @@
 ;; initialization
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(toggle-frame-maximized)
+(add-hook 'after-make-frame-functions (lambda (frame) (toggle-frame-maximized frame)))
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
 
@@ -73,6 +73,8 @@
   :ensure t
   :config
   (which-key-mode))
+
+(add-to-list 'package-selected-packages 'which-key)
 
 ;; pixel scroll
 (pixel-scroll-precision-mode)
@@ -239,6 +241,7 @@
 ;; cleanup backup files
 ;; find . -name '*~' -delete
 ;; find . -name '*#' -delete
+(make-directory "~/.emacs.d/backup" t)
 (setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
 (setq backup-by-copying t)           ; Don't delink hardlinks
 (setq version-control t)             ; Use version numbers on backups
