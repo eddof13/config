@@ -1,6 +1,8 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+(require 'use-package)
+(setq use-package-always-ensure t)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -28,53 +30,42 @@
 ;; install if missing
 (unless package-archive-contents
   (package-refresh-contents))
-(package-install-selected-packages)
-
-(eval-when-compile
-  (require 'use-package))
+(package-install-selected-packages t)
 
 ;; theme
 (load-theme 'modus-operandi t)
 
 ;; shell
 (use-package exec-path-from-shell
-  :ensure t
-  :if (memq window-system '(mac ns x))
+  :if (or (daemonp) (memq window-system '(mac ns x)))
   :config
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
 
 ;; agent-shell
 (use-package agent-shell
-    :ensure t
     :ensure-system-package
     ((claude . "brew install claude-code")
-     (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp")))
-(setq agent-shell-anthropic-authentication
-      (agent-shell-anthropic-make-authentication :login t))
-(setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
-(setq agent-shell-transcript-file-path-function nil)
+     (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
+    :config
+    (setq agent-shell-anthropic-authentication
+          (agent-shell-anthropic-make-authentication :login t))
+    (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+    (setq agent-shell-transcript-file-path-function nil))
 
 ;; magit
-(use-package magit
-  :ensure t)
+(use-package magit)
 
 ;; treesit
 (use-package treesit-auto
-  :ensure t
   :custom
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
-;; which key
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode))
-
-(add-to-list 'package-selected-packages 'which-key)
+;; which key (built-in since Emacs 30)
+(which-key-mode)
 
 ;; pixel scroll
 (pixel-scroll-precision-mode)
@@ -85,6 +76,7 @@
 (delete-selection-mode 1)
 (global-auto-revert-mode 1)
 (winner-mode 1)
+(recentf-mode 1)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (setq js-indent-level 2)
 (setq ruby-indent-level 2)
@@ -101,7 +93,6 @@
 
 ;; vertico
 (use-package vertico
-  :ensure t
   :init
   (vertico-mode))
 
@@ -123,7 +114,6 @@
 
 ;; orderless
 (use-package orderless
-  :ensure t
   :init
   (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
@@ -131,7 +121,6 @@
 
 ;; marginalia
 (use-package marginalia
-  :ensure t
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
   :init
@@ -139,7 +128,6 @@
 
 ;; consult
 (use-package consult
-  :ensure t
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
@@ -154,6 +142,7 @@
          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
          ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x r f" . consult-recent-file)         ;; recent files
          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-load)
@@ -201,7 +190,6 @@
 
 ;; projectile
 (use-package projectile
-  :ensure t
   :bind (("C-c p" . projectile-command-map))
   :custom
   (projectile-project-search-path '(("~/dev/" . 1) ("~/invoca/" . 1)))
