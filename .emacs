@@ -122,7 +122,11 @@
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
     (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
-    (setq agent-shell-transcript-file-path-function nil))
+    (setopt agent-shell-dot-subdir-function
+            (lambda (subdir)
+              (let* ((cwd (string-remove-suffix "/" (agent-shell-cwd)))
+                     (sanitized (replace-regexp-in-string "/" "-" (string-remove-prefix "/" cwd))))
+                (expand-file-name subdir (locate-user-emacs-file (concat "agent-shell/" sanitized)))))))
 
 ;; wgrep - edit consult-ripgrep/grep results in place (C-c C-p to enable, C-c C-c to apply)
 (use-package wgrep
