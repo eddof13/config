@@ -105,7 +105,7 @@
 (package-install-selected-packages t)
 
 ;; theme
-(load-theme 'modus-operandi t)
+(load-theme 'modus-operandi-tinted t)
 
 ;; shell
 (use-package exec-path-from-shell
