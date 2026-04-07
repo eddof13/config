@@ -9,8 +9,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(agent-shell consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s shell-maker transient treesit-auto vertico
-		 xterm-color)))
+   '(agent-shell cape consult corfu corfu-terminal embark embark-consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s shell-maker transient treesit-auto vertico
+		 wgrep xterm-color)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -18,12 +18,82 @@
  ;; If there is more than one, they won't work right.
  )
 
-;; TODO: revisit corfu, embark, flycheck, eglot when frames are in terminal emacs (31+)
+;; corfu - in-buffer completion popup
+;; corfu-terminal replaces child frames with overlays for TUI support (Emacs 30)
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.2)
+  (corfu-auto-prefix 2)
+  (corfu-quit-no-match 'separator)
+  :init
+  (global-corfu-mode)
+  :config
+  (corfu-popupinfo-mode 1))
+
+;; cape - additional completion-at-point sources for corfu (files, dabbrev, etc.)
+(use-package cape
+  :after corfu
+  :init
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev))
+
+(use-package corfu-terminal
+  :after corfu
+  :config
+  (unless (display-graphic-p)
+    (corfu-terminal-mode +1))
+  ;; Handle daemon spawning both GUI and TUI frames
+  (add-hook 'after-make-frame-functions
+            (lambda (frame)
+              (if (display-graphic-p frame)
+                  (corfu-terminal-mode -1)
+                (corfu-terminal-mode +1)))))
+
+;; embark - contextual actions on completions/symbols/regions
+;; C-c C-e in minibuffer exports consult results to a grep buffer (then C-c C-p for wgrep)
+(use-package embark
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings)
+   :map minibuffer-local-map
+   ("C-c C-e" . embark-export))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :after (embark consult)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+;; eglot - built-in LSP client (pairs with flymake, which consult-flymake already targets)
+;; Requires LSP servers: gem install ruby-lsp  |  npm i -g typescript-language-server
+(use-package eglot
+  :ensure nil
+  :hook ((ruby-mode ruby-ts-mode js-mode js-ts-mode typescript-ts-mode tsx-ts-mode python-mode python-ts-mode) . eglot-ensure)
+  :custom
+  (eglot-autoshutdown t)
+  ;; Disable ClassLength: it spans the entire class body when violated, highlighting the whole file
+  (eglot-workspace-configuration '(:rubyLsp (:linters (:rubocop (:disabledCops ["Metrics/ClassLength"])))))
+  :config
+  ;; Use global ruby-lsp shim directly — it's not in the web Gemfile so bundle exec fails
+  (add-to-list 'eglot-server-programs
+               '((ruby-mode ruby-ts-mode) . ("ruby-lsp")))
+  ;; Prioritize LSP completions over generic cape sources when eglot is active
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (setq-local completion-at-point-functions
+                          (list (cape-capf-super #'eglot-completion-at-point #'cape-file)
+                                #'cape-dabbrev)))))
 
 ;; initialization
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(add-hook 'after-make-frame-functions (lambda (frame) (toggle-frame-maximized frame)))
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (when (display-graphic-p frame)
+              (toggle-frame-maximized frame))))
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
 
@@ -37,7 +107,6 @@
 
 ;; shell
 (use-package exec-path-from-shell
-  :if (or (daemonp) (memq window-system '(mac ns x)))
   :config
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
@@ -52,6 +121,10 @@
           (agent-shell-anthropic-make-authentication :login t))
     (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
     (setq agent-shell-transcript-file-path-function nil))
+
+;; wgrep - edit consult-ripgrep/grep results in place (C-c C-p to enable, C-c C-c to apply)
+(use-package wgrep
+  :hook (grep-mode . wgrep-setup))
 
 ;; magit
 (use-package magit)
@@ -199,6 +272,10 @@
   ;; Override the default projectile toggle keybinding
   (define-key projectile-command-map (kbd "t") 'project-toggle-between-implementation-and-test))
 
+;; keybindings for custom functions
+(global-set-key (kbd "C-c t t") 'run-test-file)
+(global-set-key (kbd "C-c t w") 'copy-region-to-clipboard)
+
 ;; pinentry/gpg
 (require 'epg)
 (setq epg-pinentry-mode 'loopback)
@@ -242,7 +319,7 @@
   "Copy the current buffer file name to the clipboard with optional PREFIX."
   (let ((filename (if (equal major-mode 'dired-mode)
                       default-directory
-                    (buffer-file-name))))
+                    (file-relative-name (buffer-file-name) (projectile-project-root)))))
     (when filename
       (let ((fullname (if prefix (concat prefix filename) filename)))
         (kill-new fullname)
