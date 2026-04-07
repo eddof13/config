@@ -80,7 +80,9 @@
   ;; Use global ruby-lsp shim directly — it's not in the web Gemfile so bundle exec fails
   (add-to-list 'eglot-server-programs
                '((ruby-mode ruby-ts-mode) . ("ruby-lsp")))
-  ;; Prioritize LSP completions over generic cape sources when eglot is active
+  ;; Bust LSP completion cache on each keystroke to prevent stale candidates
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
+  ;; Compose LSP + file completions; dabbrev as fallback
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
               (setq-local completion-at-point-functions
@@ -190,7 +192,8 @@
   :init
   (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
-        completion-category-overrides nil))
+        completion-category-overrides '((eglot (styles orderless))
+                                        (eglot-capf (styles orderless)))))
 
 ;; marginalia
 (use-package marginalia
