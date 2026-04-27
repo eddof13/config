@@ -113,7 +113,6 @@
 
 ;; agent-shell - installed from GitHub until MELPA build catches up
 (use-package agent-shell
-    :vc (:url "https://github.com/xenodium/agent-shell")
     :ensure-system-package
     ((claude . "brew install claude-code")
      (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
