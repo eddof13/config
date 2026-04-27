@@ -105,7 +105,7 @@
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
 
-(use-package use-package-ensure-system-package)
+(require 'use-package-ensure-system-package)
 
 (use-package agent-shell
     :ensure-system-package
