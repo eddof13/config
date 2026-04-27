@@ -61,9 +61,17 @@ Add extra references here — web pages, PDFs, local files — that the agent sh
 
 * Inquiries
 
-=C-c C-c= on the block below. It reloads context automatically before sending your question.
+Run these if starting a fresh session or after restarting Emacs:
 
-#+begin_src agent-shell :var _book=load-book _refs=load-refs
+#+CALL: load-book()
+
+#+RESULTS: load-book
+
+#+CALL: load-refs()
+
+#+RESULTS: load-refs
+
+#+begin_src agent-shell
   [your question here]
 #+end_src
 
