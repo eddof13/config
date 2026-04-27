@@ -8,9 +8,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(agent-shell cape consult corfu corfu-terminal embark embark-consult exec-path-from-shell magit marginalia markdown-mode orderless projectile s shell-maker transient treesit-auto vertico
-		 wgrep xterm-color)))
+ '(package-selected-packages nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -113,8 +111,9 @@
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
 
-;; agent-shell
+;; agent-shell - installed from GitHub until MELPA build catches up
 (use-package agent-shell
+    :vc (:url "https://github.com/xenodium/agent-shell")
     :ensure-system-package
     ((claude . "brew install claude-code")
      (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
@@ -127,6 +126,47 @@
               (let* ((cwd (string-remove-suffix "/" (agent-shell-cwd)))
                      (sanitized (replace-regexp-in-string "/" "-" (string-remove-prefix "/" cwd))))
                 (expand-file-name subdir (locate-user-emacs-file (concat "agent-shell/" sanitized)))))))
+
+;; ob-agent-shell - org-babel backend for agent-shell
+(use-package ob-agent-shell
+  :vc (:url "https://github.com/eddof13/ob-agent-shell")
+  :after (agent-shell org)
+  :config
+  (setq org-confirm-babel-evaluate nil)
+  (add-to-list 'org-babel-load-languages '(agent-shell . t))
+  (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
+  (add-hook 'org-mode-hook #'visual-line-mode))
+
+;; denote
+(defun my/denote-book-template ()
+  (let* ((id (format-time-string "%Y%m%dT%H%M%S"))
+         (template-file (expand-file-name "templates/book.org" denote-directory))
+         (content (with-temp-buffer
+                    (insert-file-contents template-file)
+                    (buffer-string))))
+    (replace-regexp-in-string "IDENTIFIER" id content)))
+
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (("C-c n n" . denote)
+   ("C-c n t" . denote-template)
+   ("C-c n r" . denote-rename-file)
+   ("C-c n l" . denote-link)
+   ("C-c n b" . denote-backlinks)
+   ("C-c n d" . denote-dired)
+   ("C-c n g" . denote-grep))
+  :config
+  (setq denote-directory (expand-file-name "~/notes/"))
+  (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics" "books" "compsci" "ai" "psychology"))
+  (setq denote-templates '((book . my/denote-book-template)))
+  (denote-rename-buffer-mode 1))
+
+(use-package consult-denote
+  :after (consult denote)
+  :config
+  (consult-denote-mode 1))
 
 ;; wgrep - edit consult-ripgrep/grep results in place (C-c C-p to enable, C-c C-c to apply)
 (use-package wgrep

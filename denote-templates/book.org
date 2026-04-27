@@ -1,0 +1,70 @@
+#+PROPERTY:   header-args:agent-shell :session IDENTIFIER :results raw
+
+File: [[file:~/Downloads/FILENAME.pdf][FILENAME.pdf]]
+
+#+name: load-book
+#+begin_src agent-shell :timeout 120
+  The book for this session is at: ~/Downloads/FILENAME.pdf
+  Read the PDF at that path in full before responding to any subsequent prompts in this session.
+  When reading the PDF, extract text only. Do not process or describe images or illustrations unless explicitly asked.
+
+  Output format for all responses in this session: use org-mode markup, not markdown.
+  - Headings: * for top-level, ** for subsections (NOT # or ##)
+  - Bold: *word* (NOT **word**)
+  - Italic: /word/ (NOT _word_ or *word*)
+  - Lists: - item (same as markdown, this is fine)
+  - Numbered lists: 1. item
+  Do not use markdown syntax. Do not wrap output in code fences.
+#+end_src
+
+#+RESULTS: load-book
+
+#+begin_src agent-shell
+  Provide a succinct summary of the book: 3–4 paragraphs covering the author's thesis, the main thematic chapters, and the conclusion. Begin with a * Succinct Summary heading.
+#+end_src
+
+#+RESULTS:
+
+#+begin_src agent-shell
+  Provide a chapter-by-chapter summary of the book. Use a * Chapter Summaries top-level heading. Use ** headings for each chapter (e.g. ** Introduction, ** Chapter 1 — Title). Write 2–3 paragraphs per chapter.
+#+end_src
+
+#+RESULTS:
+
+#+begin_src agent-shell
+  Provide 8–10 key takeaways from the book. Begin with a * Key Takeaways heading. Format as a numbered list. Each item: one sentence of bolded claim (*like this*), followed by 2–3 sentences of explanation.
+#+end_src
+
+#+RESULTS:
+
+#+begin_src agent-shell
+  Provide further references and reading to follow up this book. Begin with a * Further Reading heading. Group recommendations under ** subheadings by theme. For each entry use a - list item with the full citation in org italic (/Title/) and a brief note on relevance.
+#+end_src
+
+#+RESULTS:
+
+* Additional Context
+
+Add extra references here — web pages, PDFs, local files — that the agent should read alongside the book. List one per line as file paths or URLs.
+
+#+name: load-refs
+#+begin_src agent-shell
+  In addition to the book, please also read the following supplementary references and incorporate them as context for all subsequent responses in this session.
+  If a line is a file path, read the file. If it is a URL, fetch the page.
+  If this list is empty, acknowledge and continue.
+
+  References:
+  -
+#+end_src
+
+#+RESULTS: load-refs
+
+* Inquiries
+
+=C-c C-c= on the block below. It reloads context automatically before sending your question.
+
+#+begin_src agent-shell :var _book=load-book _refs=load-refs
+  [your question here]
+#+end_src
+
+#+RESULTS:
