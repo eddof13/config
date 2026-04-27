@@ -1,6 +1,8 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (custom-set-variables
@@ -93,11 +95,6 @@
               (toggle-frame-maximized frame))))
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message nil)
-
-;; install if missing
-(unless package-archive-contents
-  (package-refresh-contents))
-(package-install-selected-packages t)
 
 ;; theme
 (load-theme 'modus-operandi-tinted t)
