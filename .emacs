@@ -31,10 +31,7 @@
 
 ;; cape - additional completion-at-point sources for corfu (files, dabbrev, etc.)
 (use-package cape
-  :after corfu
-  :init
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev))
+  :after corfu)
 
 (use-package corfu-terminal
   :after corfu
@@ -111,7 +108,8 @@
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
 
-;; agent-shell - installed from GitHub until MELPA build catches up
+(use-package use-package-ensure-system-package)
+
 (use-package agent-shell
     :ensure-system-package
     ((claude . "brew install claude-code")
@@ -334,20 +332,6 @@
 ;; git
 ;; https://simpleit.rocks/git/make-git-ignore-temporary-files-produced-by-emacs-and-vim-in-all-directories-globally/
 ;; install ag/rg
-
-;; shell
-;; iterm2 disable command w, enable alt/option
-(require 'xterm-color)
-(setq compilation-environment '("TERM=xterm-256color"))
-
-(defun my/advice-compilation-filter (f proc string)
-  (funcall f proc (xterm-color-filter string)))
-
-(advice-add 'compilation-filter :around #'my/advice-compilation-filter)
-
-;; zsh
-;; export GPG_TTY=$(tty)
-;; export TERM=xterm-256color
 
 ;; cleanup backup files
 ;; find . -name '*~' -delete
