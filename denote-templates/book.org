@@ -68,7 +68,3 @@ Run these if starting a fresh session or after restarting Emacs:
 #+end_src
 
 #+RESULTS:
-
-# Local Variables:
-# eval: (setq-local ob-agent-shell-convert-markdown t)
-# End:
