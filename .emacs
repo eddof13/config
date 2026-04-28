@@ -130,7 +130,8 @@
   (add-to-list 'org-babel-load-languages '(agent-shell . t))
   (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
   (add-to-list 'org-src-lang-modes '("agent-shell" . text))
-  (add-hook 'org-mode-hook #'visual-line-mode))
+  (add-hook 'org-mode-hook #'visual-line-mode)
+  (setq ob-agent-shell-convert-markdown t))
 
 ;; denote
 (defun my/denote-book-template ()

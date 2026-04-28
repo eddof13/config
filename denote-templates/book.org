@@ -7,14 +7,6 @@ File: [[file:~/Downloads/FILENAME.pdf][FILENAME.pdf]]
   The book for this session is at: ~/Downloads/FILENAME.pdf
   Read the PDF at that path in full before responding to any subsequent prompts in this session.
   When reading the PDF, extract text only. Do not process or describe images or illustrations unless explicitly asked.
-
-  Output format for all responses in this session: use org-mode markup, not markdown.
-  - Headings: * for top-level, ** for subsections (NOT # or ##)
-  - Bold: *word* (NOT **word**)
-  - Italic: /word/ (NOT _word_ or *word*)
-  - Lists: - item (same as markdown, this is fine)
-  - Numbered lists: 1. item
-  Do not use markdown syntax. Do not wrap output in code fences.
 #+end_src
 
 #+RESULTS: load-book
@@ -32,7 +24,7 @@ File: [[file:~/Downloads/FILENAME.pdf][FILENAME.pdf]]
 #+RESULTS:
 
 #+begin_src agent-shell
-  Provide 8–10 key takeaways from the book. Begin with a * Key Takeaways heading. Format as a numbered list. Each item: one sentence of bolded claim (*like this*), followed by 2–3 sentences of explanation.
+  Provide 8–10 key takeaways from the book. Begin with a ## Key Takeaways heading. Format as a numbered list. Each item: one sentence of bolded claim (**like this**), followed by 2–3 sentences of explanation.
 #+end_src
 
 #+RESULTS:
