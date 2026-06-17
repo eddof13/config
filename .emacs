@@ -154,7 +154,8 @@
    ("C-c n l" . denote-link)
    ("C-c n b" . denote-backlinks)
    ("C-c n d" . denote-dired)
-   ("C-c n g" . denote-grep))
+   ("C-c n g" . denote-grep)
+   ("C-c n o" . denote-open-or-create))
   :config
   (setq denote-directory (expand-file-name "~/notes/"))
   (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics" "books" "compsci" "ai" "psychology"))
