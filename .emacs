@@ -173,9 +173,6 @@
   :config
   (setq org-agenda-files '("~/notes/todo.org" "~/notes/upcoming.org")))
 
-(use-package consult
-  :bind (:map global-map
-         ("C-c n h" . consult-org-heading)))
 
 ;; wgrep - edit consult-ripgrep/grep results in place (C-c C-p to enable, C-c C-c to apply)
 (use-package wgrep
@@ -306,6 +303,8 @@
          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Notes
+         ("C-c n h" . consult-org-heading)
          ;; Minibuffer history
          :map minibuffer-local-map
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
