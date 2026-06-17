@@ -10,7 +10,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
+ '(package-selected-packages '(ob-agent-shell))
+ '(package-vc-selected-packages
+   '((ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -164,6 +166,14 @@
   :config
   (consult-denote-mode 1))
 
+;; org
+(use-package org
+  :ensure nil
+  :bind (("C-c a" . org-agenda))
+  :config
+  (setq org-agenda-files '("~/notes/todo.org" "~/notes/upcoming.org")))
+
+
 ;; wgrep - edit consult-ripgrep/grep results in place (C-c C-p to enable, C-c C-c to apply)
 (use-package wgrep
   :hook (grep-mode . wgrep-setup))
@@ -293,6 +303,8 @@
          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Notes
+         ("C-c n h" . consult-org-heading)
          ;; Minibuffer history
          :map minibuffer-local-map
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
