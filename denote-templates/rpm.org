@@ -1,0 +1,23 @@
+#+title:  RESULT_TITLE
+#+date:   %<%Y-%m-%d>
+#+filetags: :rpm:
+
+* Result
+
+What specifically do I want to achieve?
+
+* Purpose
+
+Why do I want this? What will it give me / who will I become?
+
+* Massive Action Plan
+
+** Actions
+
+- [ ]
+
+** Someday / Capture
+
+Ideas and actions not yet committed to:
+
+-
