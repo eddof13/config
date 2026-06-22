@@ -144,6 +144,12 @@
                     (buffer-string))))
     (replace-regexp-in-string "IDENTIFIER" id content)))
 
+(defun my/denote-rpm-template ()
+  (let* ((template-file (expand-file-name "templates/rpm.org" denote-directory)))
+    (with-temp-buffer
+      (insert-file-contents template-file)
+      (buffer-string))))
+
 (use-package denote
   :ensure t
   :hook (dired-mode . denote-dired-mode)
@@ -159,7 +165,8 @@
   :config
   (setq denote-directory (expand-file-name "~/notes/"))
   (setq denote-known-keywords '("emacs" "philosophy" "politics" "economics" "books" "compsci" "ai" "psychology"))
-  (setq denote-templates '((book . my/denote-book-template)))
+  (setq denote-templates '((book . my/denote-book-template)
+                           (rpm  . my/denote-rpm-template)))
   (denote-rename-buffer-mode 1))
 
 (use-package consult-denote
