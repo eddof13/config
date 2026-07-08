@@ -10,7 +10,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(ob-agent-shell))
+ '(package-selected-packages nil)
  '(package-vc-selected-packages
    '((ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
 (custom-set-faces
@@ -134,6 +134,17 @@
   (add-to-list 'org-src-lang-modes '("agent-shell" . text))
   (add-hook 'org-mode-hook #'visual-line-mode)
   (setq ob-agent-shell-convert-markdown t))
+
+;; elfeed - RSS/Atom feed reader
+(use-package elfeed
+  :bind (("C-c w" . elfeed)))
+
+;; elfeed-org - manage elfeed-feeds from an org file synced via ~/notes
+(use-package elfeed-org
+  :after elfeed
+  :config
+  (setq rmh-elfeed-org-files (list "~/notes/elfeed.org"))
+  (elfeed-org))
 
 ;; denote
 (defun my/denote-book-template ()
@@ -473,3 +484,38 @@ Handles Rails conventions: app/ ↔ spec/ ↔ test/"
          (t (message "No test file found (tried %s and %s)" spec-file test-file)))))
      
      (t (message "Not in app/, spec/, or test/ directory")))))
+
+;; clatter - IRC client
+(use-package clatter
+  :defer t
+  :commands clatter-connect
+  :bind (:map clatter-mode-map
+              ("C-c ."   . clatter-track-switch)
+              ("C-c C-." . clatter-track-switch)
+              ("C-c :"   . clatter-track-list)
+              ("C-c n"   . clatter-nicklist-toggle)
+              ("C-c C-n" . clatter-nicklist-toggle))
+  :config
+  (clatter-setup)
+  (require 'gnutls)
+  :custom
+  (clatter-flyspell-enable nil)
+  (clatter-track-in-buffer-mode-line t)
+  (clatter-networks
+   '(("Libera Chat"
+      :server "irc.libera.chat"
+      :port 6697
+      :tls t
+      :nick "eddof13" :realname "eddof13"
+      :sasl plain
+      :autojoin ("#emacs" "#security" "##programming" "#docker"
+                 "#javascript" "#lisp" "#MacOSX" "#commonlisp"
+                 "#ruby" "#rubyonrails" "#linux" "#python"
+                 "#networking" "#postgresql" "#emacs-social"
+                 "#systemcrafters"))
+     ("EFNet"
+      :server "irc.efnet.info"
+      :port 6697
+      :tls t
+      :nick "eddof13" :realname "eddof13"
+      :autojoin ("#2600")))))
