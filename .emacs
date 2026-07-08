@@ -116,7 +116,47 @@
     :config
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
-    (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+
+    ;; Grok Build (xAI) — ACP over stdio. Auth is local ~/.grok/auth.json (login).
+    ;; Requires `grok` on PATH (you already export ~/.grok/bin in ~/.zshrc;
+    ;; exec-path-from-shell above picks it up for Emacs).
+    (defvar agent-shell-xai-grok-acp-command
+      '("grok" "agent" "stdio")
+      "Command and parameters for the Grok Build ACP client.
+Example with model: (\"grok\" \"agent\" \"-m\" \"grok-build\" \"stdio\").
+With auto-approve tools: (\"grok\" \"agent\" \"--always-approve\" \"stdio\").")
+
+    (defvar agent-shell-xai-grok-environment nil
+      "Extra \"VAR=value\" environment variables for the Grok ACP process.")
+
+    (defun agent-shell-xai-make-grok-config ()
+      "Create a Grok Build agent configuration for agent-shell."
+      (agent-shell-make-agent-config
+       :identifier 'grok-build
+       :mode-line-name "Grok"
+       :buffer-name "Grok"
+       :shell-prompt "Grok> "
+       :shell-prompt-regexp "Grok> "
+       :client-maker
+       (lambda (buffer)
+         (agent-shell--make-acp-client
+          :command (car agent-shell-xai-grok-acp-command)
+          :command-params (cdr agent-shell-xai-grok-acp-command)
+          :environment-variables agent-shell-xai-grok-environment
+          :context-buffer buffer))
+       :install-instructions
+       "Install Grok Build CLI so `grok` is on PATH (typically ~/.grok/bin). See https://docs.x.ai"))
+
+    (defun agent-shell-xai-start-grok ()
+      "Start an interactive Grok Build agent shell."
+      (interactive)
+      (agent-shell--dwim :config (agent-shell-xai-make-grok-config)
+                         :new-shell t))
+
+    (add-to-list 'agent-shell-agent-configs
+                 (agent-shell-xai-make-grok-config))
+    (setq agent-shell-preferred-agent-config 'grok-build)
+
     (setopt agent-shell-dot-subdir-function
             (lambda (subdir)
               (let* ((cwd (string-remove-suffix "/" (agent-shell-cwd)))
