@@ -514,7 +514,7 @@ Handles Rails conventions: app/ ↔ spec/ ↔ test/"
                  "#networking" "#postgresql" "#emacs-social"
                  "#systemcrafters"))
      ("EFNet"
-      :server "irc.efnet.info"
+      :server "irc.efnet.org"
       :port 6697
       :tls t
       :nick "eddof13" :realname "eddof13"
