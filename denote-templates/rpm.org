@@ -1,10 +1,12 @@
 #+title:  RESULT_TITLE
-#+date:   %<%Y-%m-%d>
+#+date:   [%<%Y-%m-%d %a>]
 #+filetags: :rpm:
+# #+identifier is set by denote on capture — do not hardcode in the template.
 
 * Result
 
-What specifically do I want to achieve?
+What specifically do I want to achieve? Concrete enough that anyone can say it
+exists or it does not.
 
 * Purpose
 
@@ -13,16 +15,21 @@ Why do I want this? What will it give me / who will I become?
 * Massive Action Plan
 
 ** Actions
+Committed work only. Use Org TODO headlines (not markdown =- [ ]= checkboxes).
+Cycle with =C-c C-t= or =S-<right>=. Optional category headlines without a TODO
+keyword are fine for grouping (e.g. =*** Scope= then =**** TODO …=).
 
-- [ ]
+*** TODO
 
 ** Someday / Capture
-
-Ideas and actions not yet committed to:
+Ideas not yet committed — plain list items, no TODO keyword until promoted under
+Actions.
 
 -
 
 * Weekly Review
+Use on weekly / short-horizon RPMs. Optional on multi-week identity or business
+Result notes (those often use Triad instead or as well).
 
 ** What actually happened
 
@@ -35,3 +42,12 @@ Ideas and actions not yet committed to:
 ** What carries into next week
 
 -
+
+* Triad
+Optional. Use on identity RPMs and long-horizon business Results — three
+present-tense lines that define who I am while I pursue this. Omit on pure weekly
+instances if it would be noise.
+
+1. */I …/*
+2. */I …/*
+3. */I …/*
