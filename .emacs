@@ -541,6 +541,7 @@ Handles Rails conventions: app/ ↔ spec/ ↔ test/"
   :custom
   (clatter-flyspell-enable nil)
   (clatter-track-in-buffer-mode-line t)
+  (clatter-suppress-messages '(muted join part quit nick mode away))
   (clatter-networks
    '(("Libera Chat"
       :server "irc.libera.chat"
