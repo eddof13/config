@@ -99,13 +99,46 @@
 (setq initial-scratch-message nil)
 
 ;; theme
-(load-theme 'modus-operandi-tinted t)
+(use-package kusanagi-theme
+  :ensure t
+  :config
+  (load-theme 'kusanagi t))
+;;(load-theme 'modus-operandi-tinted t)
 
 ;; shell
 (use-package exec-path-from-shell
   :config
   (setenv "SHELL" "/bin/zsh")
   (exec-path-from-shell-initialize))
+
+(use-package ghostel
+  :ensure t
+  :bind (("C-x m" . ghostel)
+         :map ghostel-semi-char-mode-map
+         ("C-s"  . consult-line)
+         ("C-k"  . my/ghostel-send-C-k-and-kill)
+         ;; I'm used to go up/down the shell history with M-n/p from eshell
+         ;; Simulate this behavior in ghostel by sending C-p and C-n
+         ("M-p" . (lambda () (interactive) (ghostel-send-key "p" "ctrl")))
+         ("M-n" . (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
+         :map project-prefix-map
+         ("m" . ghostel-project)
+         ("M" . ghostel-project-list-buffers))
+  :config
+  (defun my/ghostel-send-C-k-and-kill ()
+    "Send `C-k' to ghostel.
+Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
+    (interactive)
+    (kill-ring-save (point) (line-end-position))
+    (ghostel-send-key "k" "ctrl"))
+
+  (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t)
+  (add-to-list 'project-switch-commands '(ghostel-project-list-buffers "Ghostel buffers") t)
+  (add-to-list 'ghostel-eval-cmds '("magit-status-setup-buffer" magit-status-setup-buffer)))
+
+(use-package ghostel-compile
+  :ensure nil
+  :hook (after-init . ghostel-compile-global-mode))
 
 (require 'use-package-ensure-system-package)
 
@@ -116,6 +149,7 @@
     :config
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
+    (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
 
     ;; Grok Build (xAI) — ACP over stdio. Auth is local ~/.grok/auth.json (login).
     ;; Requires `grok` on PATH (you already export ~/.grok/bin in ~/.zshrc;
@@ -155,7 +189,6 @@ With auto-approve tools: (\"grok\" \"agent\" \"--always-approve\" \"stdio\").")
 
     (add-to-list 'agent-shell-agent-configs
                  (agent-shell-xai-make-grok-config))
-    (setq agent-shell-preferred-agent-config 'grok-build)
 
     (setopt agent-shell-dot-subdir-function
             (lambda (subdir)
