@@ -12,7 +12,8 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
+   '((agent-shell :url "https://github.com/xenodium/agent-shell")
+     (ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -142,7 +143,11 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 (require 'use-package-ensure-system-package)
 
+;; agent-shell: Grok Build is first-class via agent-shell-xai (merged in PR #720).
+;; MELPA still lags that merge as of 2026-07-17, so install from GitHub main.
+;; Once MELPA includes agent-shell-xai.el, :vc can be dropped for :ensure t.
 (use-package agent-shell
+    :vc (:url "https://github.com/xenodium/agent-shell")
     :ensure-system-package
     ((claude . "brew install claude-code")
      (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
@@ -150,45 +155,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
     (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
-
-    ;; Grok Build (xAI) — ACP over stdio. Auth is local ~/.grok/auth.json (login).
-    ;; Requires `grok` on PATH (you already export ~/.grok/bin in ~/.zshrc;
-    ;; exec-path-from-shell above picks it up for Emacs).
-    (defvar agent-shell-xai-grok-acp-command
-      '("grok" "agent" "stdio")
-      "Command and parameters for the Grok Build ACP client.
-Example with model: (\"grok\" \"agent\" \"-m\" \"grok-build\" \"stdio\").
-With auto-approve tools: (\"grok\" \"agent\" \"--always-approve\" \"stdio\").")
-
-    (defvar agent-shell-xai-grok-environment nil
-      "Extra \"VAR=value\" environment variables for the Grok ACP process.")
-
-    (defun agent-shell-xai-make-grok-config ()
-      "Create a Grok Build agent configuration for agent-shell."
-      (agent-shell-make-agent-config
-       :identifier 'grok-build
-       :mode-line-name "Grok"
-       :buffer-name "Grok"
-       :shell-prompt "Grok> "
-       :shell-prompt-regexp "Grok> "
-       :client-maker
-       (lambda (buffer)
-         (agent-shell--make-acp-client
-          :command (car agent-shell-xai-grok-acp-command)
-          :command-params (cdr agent-shell-xai-grok-acp-command)
-          :environment-variables agent-shell-xai-grok-environment
-          :context-buffer buffer))
-       :install-instructions
-       "Install Grok Build CLI so `grok` is on PATH (typically ~/.grok/bin). See https://docs.x.ai"))
-
-    (defun agent-shell-xai-start-grok ()
-      "Start an interactive Grok Build agent shell."
-      (interactive)
-      (agent-shell--dwim :config (agent-shell-xai-make-grok-config)
-                         :new-shell t))
-
-    (add-to-list 'agent-shell-agent-configs
-                 (agent-shell-xai-make-grok-config))
+    ;; Prefer Grok with: (setq agent-shell-preferred-agent-config 'grok-build)
+    ;; Or start directly: M-x agent-shell-xai-start-grok
 
     (setopt agent-shell-dot-subdir-function
             (lambda (subdir)
