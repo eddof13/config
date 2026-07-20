@@ -12,8 +12,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages nil)
  '(package-vc-selected-packages
-   '((agent-shell :url "https://github.com/xenodium/agent-shell")
-     (ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
+   '((ob-agent-shell :url "https://github.com/eddof13/ob-agent-shell"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -144,10 +143,8 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 (require 'use-package-ensure-system-package)
 
 ;; agent-shell: Grok Build is first-class via agent-shell-xai (merged in PR #720).
-;; MELPA still lags that merge as of 2026-07-17, so install from GitHub main.
-;; Once MELPA includes agent-shell-xai.el, :vc can be dropped for :ensure t.
 (use-package agent-shell
-    :vc (:url "https://github.com/xenodium/agent-shell")
+    :ensure t
     :ensure-system-package
     ((claude . "brew install claude-code")
      (claude-agent-acp . "npm install -g @agentclientprotocol/claude-agent-acp"))
