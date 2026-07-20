@@ -155,6 +155,10 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
     (setq agent-shell-anthropic-authentication
           (agent-shell-anthropic-make-authentication :login t))
     (setq agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
+
+    ;; Only carry an explicit selection into a new shell's input. Default also
+    ;; includes `line', which always prefills the current line (the phantom text).
+    (setq agent-shell-context-sources '(region))
     ;; Prefer Grok with: (setq agent-shell-preferred-agent-config 'grok-build)
     ;; Or start directly: M-x agent-shell-xai-start-grok
 
