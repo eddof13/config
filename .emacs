@@ -179,7 +179,12 @@ Like normal Emacs `C-k'.  Kill to end of line and put content in kill-ring."
 
 ;; elfeed - RSS/Atom feed reader
 (use-package elfeed
-  :bind (("C-c w" . elfeed)))
+  :bind (("C-c w" . elfeed))
+  :config
+  ;; Longer titles in the search buffer (defaults are ~70 / 16 / 30)
+  (setq elfeed-search-title-max-width 120
+        elfeed-search-title-min-width 50
+        elfeed-search-trailing-width 25))
 
 ;; elfeed-org - manage elfeed-feeds from an org file synced via ~/notes
 (use-package elfeed-org
